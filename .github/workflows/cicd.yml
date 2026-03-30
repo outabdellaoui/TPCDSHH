@@ -21,10 +21,6 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # Optionnel : lancer les tests ici (si vous en avez)
-      # - name: Run tests
-      #   run: pytest
-
   cd:
     name: Docker Build & Deploy
     runs-on: ubuntu-latest
@@ -51,7 +47,10 @@ jobs:
 
       - name: Deploy via SSH to Windows
         run: |
+          # Sauvegarder la clé SSH
           echo "${{ secrets.SSH_KEY }}" > key.pem
           chmod 600 key.pem
-          ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
-            "powershell -ExecutionPolicy Bypass -File \"C:\path\to\deploy.ps1\" -DockerUser \"${{ secrets.DOCKERHUB_USERNAME }}\" -DockerToken \"${{ secrets.DOCKERHUB_TOKEN }}\""
+          
+          # Connexion SSH et exécution du script (version corrigée)
+          ssh -i key.pem -o StrictHostKeyChecking=no "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
+            "powershell -ExecutionPolicy Bypass -File \"C:\Users\outmane abdellaoui\deploy.ps1\" -DockerUser \"${{ secrets.DOCKERHUB_USERNAME }}\" -DockerToken \"${{ secrets.DOCKERHUB_TOKEN }}\""
