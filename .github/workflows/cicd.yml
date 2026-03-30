@@ -39,18 +39,16 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/flask-app:latest
-
-      - name: Deploy via SSH to Windows
         run: |
-          # Sauvegarder la clé SSH
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/flask_devops_demo:latest .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/flask_devops_demo:latest
+
+      - name: Deploy via SSH
+        run: |
+          
           echo "${{ secrets.SSH_KEY }}" > key.pem
           chmod 600 key.pem
           
-          # Connexion SSH et exécution du script (version corrigée)
+         
           ssh -i key.pem -o StrictHostKeyChecking=no "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
-            "powershell -ExecutionPolicy Bypass -File \"C:\Users\outmane abdellaoui\deploy.ps1\" -DockerUser \"${{ secrets.DOCKERHUB_USERNAME }}\" -DockerToken \"${{ secrets.DOCKERHUB_TOKEN }}\""
+            "powershell -ExecutionPolicy Bypass -File 'C:\Users\outmane abdellaoui\deploy.ps1' -DockerUser '${{ secrets.DOCKERHUB_USERNAME }}' -DockerToken '${{ secrets.DOCKERHUB_TOKEN }}'"
